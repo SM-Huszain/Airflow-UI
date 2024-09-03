@@ -69,7 +69,7 @@ from flask_appbuilder.urltools import get_order_args, get_page_args, get_page_si
 from flask_appbuilder.widgets import FormWidget
 from flask_babel import lazy_gettext
 from itsdangerous import URLSafeSerializer
-from jinja2.utils import htmlsafe_json_dumps, pformat  # type: ignore
+from jinja2.utils import htmlsafe_json_dumps, pformat  
 from markupsafe import Markup, escape
 from pendulum.datetime import DateTime
 from pendulum.parsing.exceptions import ParserError
@@ -1173,10 +1173,12 @@ class Airflow(AirflowBaseView):
         """Datasets view."""
         state_color_mapping = State.state_color.copy()
         state_color_mapping["null"] = state_color_mapping.pop(None)
+        standalone_dag_processor = conf.getboolean("scheduler", "standalone_dag_processor")
         return self.render_template(
             "airflow/datasets.html",
             auto_refresh_interval=conf.getint("webserver", "auto_refresh_interval"),
             state_color_mapping=state_color_mapping,
+            standalone_dag_processor=standalone_dag_processor,
         )
 
     @expose("/cluster_activity")
@@ -1191,6 +1193,13 @@ class Airflow(AirflowBaseView):
             auto_refresh_interval=conf.getint("webserver", "auto_refresh_interval"),
             state_color_mapping=state_color_mapping,
             standalone_dag_processor=standalone_dag_processor,
+        )
+    
+    @expose("/custom_menu")
+    def custom_menu(self):
+        """Cluster Activity view."""
+        return self.render_template(
+            "airflow/custom_menu.html"
         )
 
     @expose("/next_run_datasets_summary", methods=["POST"])

@@ -166,3 +166,15 @@ def parse_execution_date(execution_date_str):
 def datetime_to_nano(datetime) -> int:
     """Convert datetime to nanoseconds."""
     return int(datetime.timestamp() * 1000000000)
+
+def days_ago(n, hour=0, minute=0, second=0, microsecond=0):
+    """
+    Get a datetime object representing `n` days ago. By default the time is
+    set to midnight.
+    """
+    today = timezone.utcnow().replace(
+        hour=hour,
+        minute=minute,
+        second=second,
+        microsecond=microsecond)
+    return today - timedelta(days=n)

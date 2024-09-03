@@ -545,7 +545,7 @@ You can also set it by env variable:
 
 ```ini
 [core]
-load_examples = True
+load_examples = False
 ```
 
 You can also set it by env variable: `export AIRFLOW__CORE__LOAD_EXAMPLES=True`

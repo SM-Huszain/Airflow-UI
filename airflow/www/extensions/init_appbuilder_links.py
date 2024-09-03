@@ -31,7 +31,9 @@ def init_appbuilder_links(app):
     appbuilder.menu.menu.insert(1, appbuilder.menu.menu.pop())  # Place in the second menu slot
     appbuilder.add_link(name="Datasets", href="Airflow.datasets")
     appbuilder.menu.menu.insert(2, appbuilder.menu.menu.pop())  # Place in the third menu slot
-
+    appbuilder.add_link(name="custom", href="/custom_menu")
+    appbuilder.menu.menu.insert(3, appbuilder.menu.menu.pop())  # Place in the third menu slot
+    
     # Docs links
     appbuilder.add_link(
         name=RESOURCE_DOCS, label="Documentation", href=get_docs_url(), category=RESOURCE_DOCS_MENU

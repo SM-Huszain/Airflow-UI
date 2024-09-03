@@ -20,6 +20,7 @@ import contextlib
 import os
 import sys
 from unittest.mock import patch
+from airflow.providers.openlineage.plugins.openlineage import OpenLineageProviderPlugin
 
 import pytest
 
@@ -129,7 +130,7 @@ class TestOpenLineageProviderPlugin:
         with contextlib.ExitStack() as stack:
             for mock in mocks:
                 stack.enter_context(mock)
-            from airflow.providers.openlineage.plugins.openlineage import OpenLineageProviderPlugin
+            # from airflow.providers.openlineage.plugins.openlineage import OpenLineageProviderPlugin
 
             plugin = OpenLineageProviderPlugin()
 
