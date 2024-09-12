@@ -1,0 +1,40 @@
+from airflow import DAG
+from airflow.utils.dates import days_ago
+from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperator
+from airflow.providers.airbyte.sensors.airbyte import AirbyteJobSensor
+
+with DAG(
+    dag_id = '{{ dag_id }}',
+    tags = {{ tags }},
+    schedule_interval = '{{ schedule_interval }}',
+    catchup = {{ catchup }},
+    max_active_runs = {{ max_active_runs }},
+    start_date = {{ start_date }},
+) as dag:
+
+    {% set tasks = [] -%}
+
+    {% for task_id, parameters in airbyte_connections.items() -%}
+
+
+    {{ task_id }} = AirbyteTriggerSyncOperator(
+        task_id = "{{ task_id }}",
+        airbyte_conn_id = "{{ connection }}",
+        connection_id = "{{parameters['connection_id']}}",
+        asynchronous = "{{ parameters['asynchronous'] }}"
+    )
+
+    {{ task_id + '_sensor' }} = AirbyteJobSensor(
+       task_id="{{ task_id + '_sensor' }}",
+       airbyte_conn_id="{{ connection }}",
+       airbyte_job_id={{task_id}}.output
+    )
+
+    {% set _ = tasks.append(task_id) -%}
+    {% set _ = tasks.append(task_id + '_sensor') -%}
+
+    {% endfor %}
+
+    {{tasks | join(' >> ')}}
+
+
