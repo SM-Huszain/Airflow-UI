@@ -1,0 +1,28 @@
+import json
+from airflow import DAG
+from airflow.operators.bash import BashOperator
+from airflow.operators.python_operator import PythonOperator
+from airflow.utils.dates import days_ago
+
+with DAG(
+    dag_id = '{{ dag_id }}',
+    tags = {{ tags }}, 
+    schedule_interval = '{{ schedule_interval }}',
+    catchup = {{ catchup }},
+    max_active_runs = {{ max_active_runs }},
+    start_date = {{ start_date }},
+) as dag:
+
+    {% set tasks = [] -%}
+
+    {% for task_id, parameters in dbt_types.items() -%}
+
+    {{task_id}} = BashOperator(
+        task_id ="{{ task_id }}",
+        bash_command = "{{ parameters['bash_command'] }}",
+    )
+    {% set _ = tasks.append(task_id) -%}
+
+    {% endfor %}
+
+    {{tasks | join(' >> ')}}

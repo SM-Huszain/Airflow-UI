@@ -30,6 +30,7 @@ with DAG(
        airbyte_job_id={{task_id}}.output
     )
 
+    {# {%- set tasks = tasks + [task_id, task_id + '_sensor'] %} #}
     {% set _ = tasks.append(task_id) -%}
     {% set _ = tasks.append(task_id + '_sensor') -%}
 
