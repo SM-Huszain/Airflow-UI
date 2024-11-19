@@ -1,0 +1,36 @@
+from airflow import DAG
+from airflow.utils.dates import days_ago
+from airflow.providers.airbyte.operators.airbyte import AirbyteTriggerSyncOperator
+from airflow.providers.airbyte.sensors.airbyte import AirbyteJobSensor
+
+
+with DAG(
+    dag_id='{{ dag_conf["jobName"] }}',
+    schedule_interval="{{ dag_conf.schedule.repeat }}",
+    start_date={{ dag_conf["schedule"]["start"] }},
+    end_date={{ dag_conf["schedule"]["end"] if dag_conf["schedule"]["end"] else "None" }},
+    catchup=False,
+) as dag:
+    {% set task_list = [] %}
+    {% for parameters in dag_conf['tasks'] %}
+
+    {% if parameters["type"] == 'airbyte' %}
+    {{ parameters["name"] }} = AirbyteTriggerSyncOperator(
+        task_id='{{ parameters["name"] }}',
+        {# description = '{{ parameters["description"] }}', #}
+        airbyte_conn_id='{{ parameters["airbyteConnection"] }}',
+        connection_id='{{ parameters["connectionId"] }}',
+    )
+
+    {{ parameters["name"] + '_sensor' }} = AirbyteJobSensor(
+        task_id='{{ parameters["name"] + "_sensor" }}',
+        airbyte_conn_id='{{ parameters["airbyteConnection"] }}',
+        airbyte_job_id={{ parameters["name"] }}.output,
+    )
+    {% set _ = task_list.append(parameters["name"]) %}
+    {% set _ = task_list.append(parameters["name"] + '_sensor') %}
+    {% endif %}
+    {% endfor %}
+    {{ task_list|join(' >> ') }}
+
+    

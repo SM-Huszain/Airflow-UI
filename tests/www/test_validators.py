@@ -34,7 +34,7 @@ class TestGreaterEqualThan:
         self.form_stub = {"other_field": self.other_field_mock}
         self.form_mock = mock.MagicMock(spec_set=dict)
         self.form_mock.__getitem__.side_effect = self.form_stub.__getitem__
-
+    
     def _validate(self, fieldname=None, message=None):
         if fieldname is None:
             fieldname = "other_field"
@@ -154,7 +154,6 @@ class TestValidKey:
             match=r"The key has to be less than [0-9]+ characters",
         ):
             self._validate()
-
 
 class TestReadOnly:
     def setup_method(self):

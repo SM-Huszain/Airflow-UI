@@ -12,27 +12,27 @@ with DAG(
     start_date = {{ start_date }},
 ) as dag:
 
-    {% set tasks = [] -%}
+    {% set tasks = [] %}
 
-    {% for task_id, parameters in airbyte_connections.items() -%}
+    {% for task_id, parameters in airbyte_connections.items()  %}
 
 
     {{ task_id }} = AirbyteTriggerSyncOperator(
         task_id = "{{ task_id }}",
-        airbyte_conn_id = "{{ connection }}",
+        airbyte_connection = "{{ connection }}",
         connection_id = "{{parameters['connection_id']}}",
         asynchronous = "{{ parameters['asynchronous'] }}"
     )
 
     {{ task_id + '_sensor' }} = AirbyteJobSensor(
        task_id="{{ task_id + '_sensor' }}",
-       airbyte_conn_id="{{ connection }}",
+       airbyte_connection="{{ connection }}",
        airbyte_job_id={{task_id}}.output
     )
 
     {# {%- set tasks = tasks + [task_id, task_id + '_sensor'] %} #}
     {% set _ = tasks.append(task_id) -%}
-    {% set _ = tasks.append(task_id + '_sensor') -%}
+    {% set _ = tasks.append(task_id + '_sensor') %}
 
     {% endfor %}
 
