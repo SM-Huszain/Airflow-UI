@@ -11,15 +11,17 @@ with DAG(
     end_date={{ dag_conf["schedule"]["end"] if dag_conf["schedule"]["end"] else "None" }},
     catchup=False,
 ) as dag:
+
     {% set task_list = [] %}
+
     {% for parameters in dag_conf['tasks'] %}
 
     {% if parameters["type"] == 'airbyte' %}
     {{ parameters["name"] }} = AirbyteTriggerSyncOperator(
         task_id='{{ parameters["name"] }}',
-        {# description = '{{ parameters["description"] }}', #}
         airbyte_conn_id='{{ parameters["airbyteConnection"] }}',
         connection_id='{{ parameters["connectionId"] }}',
+        asynchronous = "{{ parameters['asynchronous'] }}"
     )
 
     {{ parameters["name"] + '_sensor' }} = AirbyteJobSensor(
@@ -30,7 +32,7 @@ with DAG(
     {% set _ = task_list.append(parameters["name"]) %}
     {% set _ = task_list.append(parameters["name"] + '_sensor') %}
     {% endif %}
-    {% endfor %}
-    {{ task_list|join(' >> ') }}
 
+    {% endfor %}
     
+    {{ task_list|join(' >> ') }}

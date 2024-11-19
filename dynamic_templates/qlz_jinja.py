@@ -10,22 +10,24 @@ dag_conf = {
     "schedule": {
         "start": "days_ago(1)",
         "end": "",
-        "repeat": "daily"
+        "repeat": "never"
     },
     "tasks": [
         {
             "name": "task1",
             "description": "Extract data from api dump into Amazon S3 bucket",
             "type": "airbyte",
-            "connectionId": "mtyj6rju54u76icdjt7i867i4e5uedh5",
-            "airbyteConnection": "airbyte-connection"
+            "connectionId": "d71a609d-a6f2-4b87-a32d-5022cffc2d75",
+            "airbyteConnection": "airbyte-connection",
+            'asynchronous' :  True
         },
         {
             "name": "task2",
             "description": "Extract data from api and dump into Amazon S3 bucket",
             "type": "airbyte",
-            "connectionId": "ryj568u679i6u43y4uhr6i67iy8oikyw4",
-            "airbyteConnection": "airbyte-connection"
+            "connectionId": "fc5f9601-48c2-4708-ace5-b39b61f016be",
+            "airbyteConnection": "airbyte-connection",
+            'asynchronous' :  True
         }
     ],
     "createdAt": "",
@@ -37,6 +39,4 @@ dag_conf["schedule"]["repeat"] = get_cron(dag_conf["schedule"]["repeat"])
 with open("/home/hussain/airflow/dags/qlz_dag.py", "w") as f :
     f.write(dag_template.render(dag_conf=dag_conf))
 
-print("File Created")
-
-
+print("Changes Updated")
