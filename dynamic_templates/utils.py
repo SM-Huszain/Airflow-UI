@@ -1,6 +1,6 @@
 def get_cron(repeat):
     if repeat == "never":
-        return None  
+        return "@once"  
     elif repeat == "daily":
         return "0 0 * * *" 
     elif repeat == "weekly":
