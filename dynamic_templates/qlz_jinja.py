@@ -1,42 +1,23 @@
-from jinja2 import Environment, FileSystemLoader
-from utils import get_cron
 
-environment = Environment(loader=FileSystemLoader("."))
+import os
+from jinja2 import Environment, FileSystemLoader
+from dynamic_templates.utils import get_cron
+
+# template_dir = os.path.dirname(os.path.abspath(__file__),)
+template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
+
+
+
+environment = Environment(loader=FileSystemLoader(template_dir))
 dag_template = environment.get_template("qlz.jinja")
 
-dag_conf = {
-    "jobName": "Qualiz-POC",
-    "description": "",
-    "schedule": {
-        "start": "days_ago(1)",
-        "end": "",
-        "repeat": "never"
-    },
-    "tasks": [
-        {
-            "name": "task1",
-            "description": "Extract data from api dump into Amazon S3 bucket",
-            "type": "airbyte",
-            "connectionId": "d71a609d-a6f2-4b87-a32d-5022cffc2d75",
-            "airbyteConnection": "airbyte-connection",
-            'asynchronous' :  True
-        },
-        {
-            "name": "task2",
-            "description": "Extract data from api and dump into Amazon S3 bucket",
-            "type": "airbyte",
-            "connectionId": "fc5f9601-48c2-4708-ace5-b39b61f016be",
-            "airbyteConnection": "airbyte-connection",
-            'asynchronous' :  True
-        }
-    ],
-    "createdAt": "",
-    "updatedAt": ""
-}
+def test(dag_conf):
+    print(template_dir)
+    dag_conf["schedule"]["repeat"] = get_cron(dag_conf["schedule"]["repeat"])
+    
+    with open("/mnt/d/airflow/dags/qlz_dag.py", "w") as f :
+        f.write(dag_template.render(dag_conf=dag_conf))
+    
+    print("Changes Updated")
 
-dag_conf["schedule"]["repeat"] = get_cron(dag_conf["schedule"]["repeat"])
 
-with open("/home/hussain/airflow/dags/qlz_dag.py", "w") as f :
-    f.write(dag_template.render(dag_conf=dag_conf))
-
-print("Changes Updated")

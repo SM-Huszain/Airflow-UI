@@ -6,12 +6,12 @@ from airflow.providers.airbyte.sensors.airbyte import AirbyteJobSensor
 
 with DAG(
     dag_id='{{ dag_conf["jobName"] }}',
-    schedule_interval="{{ dag_conf.schedule.repeat }}",
-    start_date={{ dag_conf["schedule"]["start"] }},
-    end_date={{ dag_conf["schedule"]["end"] if dag_conf["schedule"]["end"] else "None" }},
+    schedule="{{ dag_conf.schedule.repeat }}",
+    start_date=days_ago(1),
+    {# end_date={{ dag_conf["schedule"]["end"] if dag_conf["schedule"]["end"] else "None" }}, #}
     catchup=False,
 ) as dag:
-
+   
     {% set task_list = [] %}
 
     {% for parameters in dag_conf['tasks'] %}
@@ -21,7 +21,6 @@ with DAG(
         task_id='{{ parameters["name"] }}',
         airbyte_conn_id='{{ parameters["airbyteConnection"] }}',
         connection_id='{{ parameters["connectionId"] }}',
-        asynchronous = "{{ parameters['asynchronous'] }}"
     )
 
     {{ parameters["name"] + '_sensor' }} = AirbyteJobSensor(
